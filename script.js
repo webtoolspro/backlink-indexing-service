@@ -7,11 +7,10 @@ form.addEventListener('submit', (event) => {
   const name = document.getElementById('name').value.trim();
   const contact = document.getElementById('contact').value.trim();
   const requirements = document.getElementById('requirements').value.trim();
-
   if (!name || !contact || !plan.value || !requirements) return;
 
   const message = [
-    'Hello IndexPilot, I want to enquire about backlink indexing.',
+    'Hello Hyper Indexing, I want to enquire about backlink indexing.',
     '',
     `Name: ${name}`,
     `Email / Phone: ${contact}`,
@@ -27,22 +26,19 @@ form.addEventListener('submit', (event) => {
   window.open(whatsappUrl, '_blank', 'noopener');
 });
 
-// Every pricing CTA opens WhatsApp directly with customized details for the selected plan.
 document.querySelectorAll('.whatsapp-plan').forEach(button => {
   button.addEventListener('click', (event) => {
     event.preventDefault();
-
     const selectedPlan = button.dataset.plan;
     const details = button.dataset.details;
     const message = [
-      'Hello IndexPilot, I am interested in your Backlink Indexing Service.',
+      'Hello Hyper Indexing, I am interested in your Backlink Indexing Service.',
       '',
       `Plan: ${selectedPlan}`,
       `Plan Details: ${details}`,
       '',
       'Please share the next steps to get started.'
     ].join('\n');
-
     const whatsappUrl = `https://wa.me/919310271105?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank', 'noopener');
   });
