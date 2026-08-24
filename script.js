@@ -27,15 +27,24 @@ form.addEventListener('submit', (event) => {
   window.open(whatsappUrl, '_blank', 'noopener');
 });
 
-document.querySelectorAll('[data-plan]').forEach(button => {
-  button.addEventListener('click', () => {
-    plan.value = `${button.dataset.plan} - ` + {
-      'Demo Plan':'5 URLs - ₹100',
-      'Starter Plan':'20 URLs - ₹400',
-      'Growth Plan':'100 URLs - ₹1,899',
-      'Mega Plan':'500 URLs - ₹8,999',
-      'Enterprise Plan':'2,000 URLs - ₹34,999'
-    }[button.dataset.plan];
+// Every pricing CTA opens WhatsApp directly with customized details for the selected plan.
+document.querySelectorAll('.whatsapp-plan').forEach(button => {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    const selectedPlan = button.dataset.plan;
+    const details = button.dataset.details;
+    const message = [
+      'Hello IndexPilot, I am interested in your Backlink Indexing Service.',
+      '',
+      `Plan: ${selectedPlan}`,
+      `Plan Details: ${details}`,
+      '',
+      'Please share the next steps to get started.'
+    ].join('\n');
+
+    const whatsappUrl = `https://wa.me/919310271105?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener');
   });
 });
 
