@@ -44,6 +44,37 @@ document.querySelectorAll('.whatsapp-plan').forEach(button => {
   });
 });
 
-document.querySelectorAll('.nav-links a').forEach(link => {
-  link.addEventListener('click', () => document.querySelector('.nav-links')?.classList.remove('open'));
-});
+// Mobile navigation
+const menuButton = document.querySelector('.menu-btn');
+const navLinks = document.querySelector('.nav-links');
+
+if (menuButton && navLinks) {
+  menuButton.setAttribute('aria-expanded', 'false');
+
+  const closeMenu = () => {
+    navLinks.classList.remove('open');
+    menuButton.setAttribute('aria-expanded', 'false');
+    menuButton.textContent = '☰';
+  };
+
+  menuButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const isOpen = navLinks.classList.toggle('open');
+    menuButton.setAttribute('aria-expanded', String(isOpen));
+    menuButton.textContent = isOpen ? '✕' : '☰';
+  });
+
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!navLinks.contains(event.target) && !menuButton.contains(event.target)) {
+      closeMenu();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) closeMenu();
+  });
+}
