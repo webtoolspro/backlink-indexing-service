@@ -1,24 +1,42 @@
-const form = document.getElementById('urlForm');
+const form = document.getElementById('enquiryForm');
 const result = document.getElementById('formResult');
-const textarea = document.getElementById('urls');
+const plan = document.getElementById('plan');
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  const urls = textarea.value.split(/\s+/).map(v => v.trim()).filter(Boolean);
-  const valid = urls.filter(url => {
-    try { return ['http:', 'https:'].includes(new URL(url).protocol); } catch { return false; }
-  });
-  if (!valid.length) {
-    result.style.display = 'block';
-    result.style.color = '#ffb4a8';
-    result.style.background = 'rgba(255,110,90,.08)';
-    result.textContent = 'Please enter at least one valid http:// or https:// URL.';
-    return;
-  }
+  const name = document.getElementById('name').value.trim();
+  const contact = document.getElementById('contact').value.trim();
+  const requirements = document.getElementById('requirements').value.trim();
+
+  if (!name || !contact || !plan.value || !requirements) return;
+
+  const message = [
+    'Hello IndexPilot, I want to enquire about backlink indexing.',
+    '',
+    `Name: ${name}`,
+    `Email / Phone: ${contact}`,
+    `Plan: ${plan.value}`,
+    `Requirements: ${requirements}`
+  ].join('\n');
+
+  const whatsappUrl = `https://wa.me/919310271105?text=${encodeURIComponent(message)}`;
   result.style.display = 'block';
-  result.style.color = '';
-  result.style.background = '';
-  result.textContent = `${valid.length} URL${valid.length === 1 ? '' : 's'} validated and added to the demo queue.`;
+  result.style.color = '#7df2a3';
+  result.style.background = 'rgba(37,211,102,.08)';
+  result.textContent = 'Opening WhatsApp with your enquiry...';
+  window.open(whatsappUrl, '_blank', 'noopener');
+});
+
+document.querySelectorAll('[data-plan]').forEach(button => {
+  button.addEventListener('click', () => {
+    plan.value = `${button.dataset.plan} - ` + {
+      'Demo Plan':'5 URLs - ₹100',
+      'Starter Plan':'20 URLs - ₹400',
+      'Growth Plan':'100 URLs - ₹1,899',
+      'Mega Plan':'500 URLs - ₹8,999',
+      'Enterprise Plan':'2,000 URLs - ₹34,999'
+    }[button.dataset.plan];
+  });
 });
 
 document.querySelectorAll('.nav-links a').forEach(link => {
