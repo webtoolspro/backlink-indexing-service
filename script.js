@@ -34,7 +34,7 @@ if (menuButton && navLinks) {
   window.addEventListener('resize', () => { if (window.innerWidth > 900) closeMenu(); });
 }
 
-// Professional single-review testimonial carousel
+// Responsive multi-card testimonial carousel
 const testimonialSlider = document.querySelector('.testimonial-slider');
 const testimonialTrack = document.querySelector('.testimonial-track');
 const testimonialCards = testimonialTrack ? Array.from(testimonialTrack.querySelectorAll('.testimonial-card')) : [];
@@ -47,30 +47,48 @@ if (testimonialSlider && testimonialTrack && testimonialCards.length && testimon
   let timer;
   let startX = 0;
 
+  const getVisibleCards = () => {
+    if (window.innerWidth <= 700) return 1;
+    if (window.innerWidth <= 900) return 2;
+    return 3;
+  };
+
+  const getMaxIndex = () => Math.max(0, testimonialCards.length - getVisibleCards());
+
+  const getStep = () => {
+    const firstCard = testimonialCards[0];
+    if (!firstCard) return testimonialSlider.clientWidth;
+    const styles = window.getComputedStyle(testimonialTrack);
+    const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+    return firstCard.getBoundingClientRect().width + gap;
+  };
+
   const renderDots = () => {
+    const maxIndex = getMaxIndex();
     testimonialDots.innerHTML = '';
-    testimonialCards.forEach((_, i) => {
+    for (let i = 0; i <= maxIndex; i += 1) {
       const dot = document.createElement('button');
-      dot.type = 'button'; dot.className = `testimonial-dot${i === index ? ' active' : ''}`;
-      dot.setAttribute('aria-label', `Show review ${i + 1}`);
+      dot.type = 'button';
+      dot.className = `testimonial-dot${i === index ? ' active' : ''}`;
+      dot.setAttribute('aria-label', `Show testimonial group ${i + 1}`);
       dot.setAttribute('aria-selected', String(i === index));
       dot.addEventListener('click', () => { goTo(i); restart(); });
       testimonialDots.appendChild(dot);
-    });
+    }
   };
 
   const goTo = (nextIndex) => {
-    index = (nextIndex + testimonialCards.length) % testimonialCards.length;
-    const width = testimonialSlider.clientWidth;
-    testimonialTrack.style.transform = `translate3d(-${index * width}px,0,0)`;
+    const maxIndex = getMaxIndex();
+    index = Math.min(Math.max(nextIndex, 0), maxIndex);
+    testimonialTrack.style.transform = `translate3d(-${index * getStep()}px,0,0)`;
     testimonialDots.querySelectorAll('.testimonial-dot').forEach((dot, i) => {
       dot.classList.toggle('active', i === index);
       dot.setAttribute('aria-selected', String(i === index));
     });
   };
 
-  const next = () => goTo(index + 1);
-  const prev = () => goTo(index - 1);
+  const next = () => goTo(index >= getMaxIndex() ? 0 : index + 1);
+  const prev = () => goTo(index <= 0 ? getMaxIndex() : index - 1);
   const start = () => { clearInterval(timer); timer = setInterval(next, 5000); };
   const restart = () => { clearInterval(timer); start(); };
 
@@ -79,8 +97,12 @@ if (testimonialSlider && testimonialTrack && testimonialCards.length && testimon
   testimonialSlider.addEventListener('mouseenter', () => clearInterval(timer));
   testimonialSlider.addEventListener('mouseleave', start);
   testimonialSlider.addEventListener('touchstart', event => { startX = event.touches[0].clientX; clearInterval(timer); }, { passive: true });
-  testimonialSlider.addEventListener('touchend', event => { const distance = event.changedTouches[0].clientX - startX; if (Math.abs(distance) > 45) distance < 0 ? next() : prev(); start(); }, { passive: true });
-  window.addEventListener('resize', () => goTo(index));
+  testimonialSlider.addEventListener('touchend', event => {
+    const distance = event.changedTouches[0].clientX - startX;
+    if (Math.abs(distance) > 45) distance < 0 ? next() : prev();
+    start();
+  }, { passive: true });
+  window.addEventListener('resize', () => { renderDots(); goTo(index); });
 
   renderDots();
   goTo(0);
